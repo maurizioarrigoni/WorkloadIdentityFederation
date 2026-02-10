@@ -1,0 +1,29 @@
+name: Test Workload Identity Federation
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  id-token: write # Fondamentale: permette a GitHub di generare il token OIDC
+  contents: read
+
+jobs:
+  get-token:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Az CLI login via Federated Identity'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: 'Verifica il Token ed esegui un comando'
+        run: |
+          # Mostra l'identità con cui siamo loggati
+          az ad signed-in-user show --query displayName || az account show
+          
+          # Esempio: Ottenere un token JWT per Graph tramite Azure CLI
+          ACCESS_TOKEN=$(az account get-access-token --resource https://graph.microsoft.com --query accessToken -o tsv)
+          echo "Token ottenuto con successo (primi 20 caratteri): ${ACCESS_TOKEN:0:20}..."
