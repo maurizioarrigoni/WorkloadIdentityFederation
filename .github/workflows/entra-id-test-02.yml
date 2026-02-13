@@ -1,4 +1,4 @@
-name: Test Workload Identity Federation
+name: Test Workload Identity Federation from Github to Entra ID with AZ CLI
 
 on:
   push:

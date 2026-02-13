@@ -1,4 +1,4 @@
-name: Test Federation with PowerShell
+name: Test Workload Identity Federation from Github to Entra ID with PowerShell
 
 on:
   push:
