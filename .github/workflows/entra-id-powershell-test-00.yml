@@ -1,0 +1,41 @@
+name: Test Federation with PowerShell
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  powershell-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Login to Azure via PowerShell'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          # Usiamo il flag per saltare la sottoscrizione se vuoi solo testare l'identità
+          allow-no-subscriptions: true 
+          enable-AzPSSession: true # Fondamentale per abilitare il modulo Az
+
+      - name: 'Esegui Script PowerShell'
+        shell: pwsh
+        run: |
+          # 1. Verifica l'identità corrente nel contesto Azure
+          $context = Get-AzContext
+          Write-Host "Autenticato come App ID: $($context.Account.Id)"
+
+          # 2. Ottenere un Access Token JWT manualmente (per debug o API esterne)
+          $tokenObj = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com"
+          $jwt = $tokenObj.Token
+          Write-Host "JWT Token ottenuto (primi 20 char): $($jwt.Substring(0,20))..."
+
+          # 3. (Opzionale) Usare il token con una chiamata REST diretta
+          $headers = @{
+              Authorization = "Bearer $jwt"
+          }
+          $tenantDetails = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/organization" -Headers $headers
+          Write-Host "Dettagli Tenant: $($tenantDetails.value.displayName)"
