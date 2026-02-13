@@ -24,9 +24,6 @@ jobs:
       - name: 'Esegui Script PowerShell'
         shell: pwsh
         run: |
-          # 0. Aggiorna i moduli Az (opzionale, ma consigliato per avere le ultime funzionalità)
-          Update-PSResource Az
-
           # 1. Verifica l'identità corrente nel contesto Azure
           $context = Get-AzContext
           Write-Host "Autenticato come App ID: $($context.Account.Id)"
