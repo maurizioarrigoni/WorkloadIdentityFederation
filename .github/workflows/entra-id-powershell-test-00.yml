@@ -21,6 +21,12 @@ jobs:
           allow-no-subscriptions: true 
           enable-AzPSSession: true # Fondamentale per abilitare il modulo Az
 
+      - name: 'Update Az Module'
+        shell: pwsh
+        run: |
+          # Disabilita il controllo della versione per evitare rumore nei log
+          Set-AzConfig -CheckForUpgrade $false
+          
       - name: 'Esegui Script PowerShell'
         shell: pwsh
         run: |
