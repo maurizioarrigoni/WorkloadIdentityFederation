@@ -41,8 +41,8 @@ jobs:
           Write-Host "JWT Token ottenuto: $jwt"
 
           # 3. (Opzionale) Usare il token con una chiamata REST diretta
-          $headers = @{
-              Authorization = "Bearer $jwt"
-          }
-          $tenantDetails = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/organization" -Headers $headers
-          Write-Host "Dettagli Tenant: $($tenantDetails.value.displayName)"
+          # $headers = @{
+          #     Authorization = "Bearer $jwt"
+          # }
+          # $tenantDetails = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/organization" -Headers $headers
+          # Write-Host "Dettagli Tenant: $($tenantDetails.value.displayName)"
