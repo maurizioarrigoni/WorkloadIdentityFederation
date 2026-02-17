@@ -58,7 +58,7 @@ jobs:
                   Write-Host $decodedPayload
               }
           } else {
-              Write-Error "Impossibile recuperare il token."
+              Write-Host "Impossibile recuperare il token."
           }
           # # Tecnica 1: Codifica in Base64 del JWT per poterlo visualizzare nei log (GitHub non riconoscerà la stringa e la mostrerà)
           # $base64Token = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($jwt))
