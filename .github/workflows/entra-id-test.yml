@@ -1,4 +1,4 @@
-name: Test Workload Identity Federation
+name: Test AZ CLI
 
 on:
   push:
