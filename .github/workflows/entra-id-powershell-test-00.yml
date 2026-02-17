@@ -37,9 +37,19 @@ jobs:
           # 2. Ottenere un Access Token JWT manualmente (per debug o API esterne)
           $tokenObj = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com"
           $jwt = $tokenObj.Token                    
-          # Codifica in Base64 del JWT per poterlo visualizzare nei log (GitHub non riconoscerà la stringa e la mostrerà)
-          $base64Token = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($jwt))
-          Write-Host "Token in Base64 (Copia questo e decodificalo online): $base64Token"          
+          # # Tecnica 1: Codifica in Base64 del JWT per poterlo visualizzare nei log (GitHub non riconoscerà la stringa e la mostrerà)
+          # $base64Token = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($jwt))
+          # Write-Host "Token in Base64 (Copia questo e decodificalo online): $base64Token"          
+          # Tecnica 2: Mostra solo il payload (la parte centrale del JWT) decodificato
+          # Un JWT è composto da Header.Payload.Signature
+          $payload = $jwt.Split('.')[1]
+          # Aggiustiamo il padding per la decodifica base64 se necessario
+          $padLength = [int]([Math]::Ceiling($payload.Length / 4) * 4)
+          $payload = $payload.PadRight($padLength, '=')
+          $decodedPayload = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($payload))
+          
+          Write-Host "--- PAYLOAD DEL TOKEN (Decodificato) ---"
+          Write-Host $decodedPayload
 
           # 3. (Opzionale) Usare il token con una chiamata REST diretta
           # $headers = @{
