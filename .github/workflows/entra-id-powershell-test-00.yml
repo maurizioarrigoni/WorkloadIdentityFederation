@@ -38,7 +38,7 @@ jobs:
           $tokenObj = Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com"
           $jwt = $tokenObj.Token
           #Write-Host "JWT Token ottenuto (primi 20 char): $($jwt.Substring(0,20))..."
-          Write-Host "JWT Token ottenuto: $($jwt)"
+          Write-Host "JWT Token ottenuto: $jwt"
 
           # 3. (Opzionale) Usare il token con una chiamata REST diretta
           $headers = @{
