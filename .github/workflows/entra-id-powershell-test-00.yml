@@ -39,23 +39,40 @@ jobs:
           # $jwt = $tokenObj.Token          
           # 2.1. Converti il SecureString in Plain Text (testo semplice)
           # Utilizziamo il metodo statico per estrarre il contenuto in modo sicuro per il runner
-          $jwt = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto(
-              [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($tokenObj.Token)
-          )
-
+          $jwt = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($tokenObj.Token))
+          # Ora $jwt è una stringa normale e possiamo usare .Split()
+          if ($jwt -ne $null) {
+              # Tecnica: Mostriamo il Payload decodificato (la parte centrale del JWT)
+              $parts = $jwt.Split('.')
+              if ($parts.Length -gt 1) {
+                  $payload = $parts[1]
+                  
+                  # Fix del padding Base64 per la decodifica
+                  $padLength = [int]([Math]::Ceiling($payload.Length / 4) * 4)
+                  $payloadPadded = $payload.PadRight($padLength, '=')
+                  
+                  $decodedBytes = [System.Convert]::FromBase64String($payloadPadded)
+                  $decodedPayload = [System.Text.Encoding]::UTF8.GetString($decodedBytes)
+                  
+                  Write-Host "--- PAYLOAD DEL TOKEN DECODIFICATO ---" -ForegroundColor Cyan
+                  Write-Host $decodedPayload
+              }
+          } else {
+              Write-Error "Impossibile recuperare il token."
+          }
           # # Tecnica 1: Codifica in Base64 del JWT per poterlo visualizzare nei log (GitHub non riconoscerà la stringa e la mostrerà)
           # $base64Token = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($jwt))
           # Write-Host "Token in Base64 (Copia questo e decodificalo online): $base64Token"          
           # Tecnica 2: Mostra solo il payload (la parte centrale del JWT) decodificato
           # Un JWT è composto da Header.Payload.Signature
-          $payload = $jwt.Split('.')[1]
+          # $payload = $jwt.Split('.')[1]
           # Aggiustiamo il padding per la decodifica base64 se necessario
-          $padLength = [int]([Math]::Ceiling($payload.Length / 4) * 4)
-          $payload = $payload.PadRight($padLength, '=')
-          $decodedPayload = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($payload))
+          # $padLength = [int]([Math]::Ceiling($payload.Length / 4) * 4)
+          # $payload = $payload.PadRight($padLength, '=')
+          # $decodedPayload = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($payload))
           
-          Write-Host "--- PAYLOAD DEL TOKEN (Decodificato) ---"
-          Write-Host $decodedPayload
+          # Write-Host "--- PAYLOAD DEL TOKEN (Decodificato) ---"
+          # Write-Host $decodedPayload
 
           # 3. (Opzionale) Usare il token con una chiamata REST diretta
           # $headers = @{
