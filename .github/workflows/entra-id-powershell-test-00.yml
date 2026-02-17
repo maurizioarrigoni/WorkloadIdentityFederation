@@ -1,4 +1,4 @@
-name: Test Workload Identity Federation from Github to Entra ID with PowerShell
+name: Test PowerShell
 
 on:
   push:
